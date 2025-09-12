@@ -1,0 +1,32 @@
+# Archivos de caché del intérprete de Python
+__pycache__/
+*.py[cod]
+
+# Entorno virtual
+venv/
+.venv/
+env/
+
+# Archivos de registro y bases de datos
+*.log
+*.sqlite3
+*.db
+!db.sqlite3
+
+# Archivos de caché de pruebas
+.pytest_cache/
+.tox/
+
+# Archivos de instalación
+dist/
+build/
+*.egg-info/
+
+# Jupyter Notebooks y otros IDEs
+.ipynb_checkpoints
+.vscode/
+.idea/
+
+# Archivos de sistema operativo
+.DS_Store
+Thumbs.db
