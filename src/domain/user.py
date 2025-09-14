@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 class User:
@@ -6,6 +6,6 @@ class User:
         self.id = id
         self.username = username
         self.password = password
-        self.date = date or datetime.utcnow()  # si no viene, usa fecha/hora actual
+        self.date = date or datetime.now(timezone.utc)  # si no viene, usa fecha/hora actual
 
 

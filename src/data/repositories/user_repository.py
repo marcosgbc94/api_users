@@ -1,30 +1,30 @@
 from sqlalchemy.orm import Session
 from src.data.mappers.user_mapper import UserMapper
+from src.data.models.user_model import UserModel
 from src.domain.user import User
 
 class UserRepository:
-    def __init__(self, session: Session):
-        self.session = session
-
-    def create_user(self, user_domain):
-        # Mapea a SQLAlchemy
+    def create_user(self, session: Session, user_domain: User) -> User:
         user_model = UserMapper.to_model(user_domain)
-        self.session.add(user_model)
-        self.session.commit()
-        self.session.refresh(user_model)
-        # Devuelve el dominio
+        session.add(user_model)
+        session.commit()
+        session.refresh(user_model)
         return UserMapper.to_domain(user_model)
-    
-    def get_user_by_username(self, username: str) -> User | None:
-        return self.session.query(User).filter_by(username=username).first()
 
-    def list_users(self) -> list[User]:
-        return self.session.query(User).all()
+    def get_user_by_username(self, session: Session, username: str) -> User | None:
+        user_model = session.query(UserModel).filter_by(username=username).first()
+        if user_model:
+            return UserMapper.to_domain(user_model)
+        return None
 
-    def delete_user(self, user_id: int) -> bool:
-        user = self.session.query(User).get(user_id)
+    def list_users(self, session: Session) -> list[User]:
+        users_model = session.query(UserModel).all()
+        return [UserMapper.to_domain(user) for user in users_model]
+
+    def delete_user(self, session: Session, user_id: int) -> bool:
+        user = session.query(UserModel).get(user_id)
         if user:
-            self.session.delete(user)
-            self.session.commit()
+            session.delete(user)
+            session.commit()
             return True
         return False
