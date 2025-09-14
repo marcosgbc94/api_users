@@ -30,3 +30,6 @@ build/
 # Archivos de sistema operativo
 .DS_Store
 Thumbs.db
+
+#env
+.env

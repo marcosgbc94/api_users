@@ -1,15 +1,12 @@
+# src/domain/schemas.py
+from typing import Optional
 from pydantic import BaseModel
-
-# Verifica los datos in/out, les agrega tipos :)
-
-class UserCreate(BaseModel):
-    username: str
-    password: str
+from datetime import datetime
 
 class UserOut(BaseModel):
+    id: Optional[int]
     username: str
-    role: str
+    date: Optional[datetime]
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
+    class Config:
+        orm_mode = True  # Esto permite recibir objetos SQLAlchemy

@@ -1,17 +1,30 @@
+from sqlalchemy.orm import Session
+from src.data.mappers.user_mapper import UserMapper
 from src.domain.user import User
-from src.core.security import hash_password
 
-# Repositorio en memoria (podría cambiarse por JSON o DB)
 class UserRepository:
-    def __init__(self):
-        self.users = {}
+    def __init__(self, session: Session):
+        self.session = session
 
-    def create(self, username: str, password: str):
-        if username in self.users:
-            return None
-        user = User(username=username, hashed_password=hash_password(password))
-        self.users[username] = user
-        return user
+    def create_user(self, user_domain):
+        # Mapea a SQLAlchemy
+        user_model = UserMapper.to_model(user_domain)
+        self.session.add(user_model)
+        self.session.commit()
+        self.session.refresh(user_model)
+        # Devuelve el dominio
+        return UserMapper.to_domain(user_model)
+    
+    def get_user_by_username(self, username: str) -> User | None:
+        return self.session.query(User).filter_by(username=username).first()
 
-    def get_by_username(self, username: str):
-        return self.users.get(username)
+    def list_users(self) -> list[User]:
+        return self.session.query(User).all()
+
+    def delete_user(self, user_id: int) -> bool:
+        user = self.session.query(User).get(user_id)
+        if user:
+            self.session.delete(user)
+            self.session.commit()
+            return True
+        return False
