@@ -2,6 +2,7 @@ import os
 from sqlalchemy import Column, Integer, create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
+from src.data.database.base import Base
 
 load_dotenv()  # Carga variables del .env
 
@@ -27,8 +28,13 @@ class DataSourceMySQL:
             autoflush=False,
             bind=self.engine
         )
-        self.Base = declarative_base()
+        self.Base = Base
 
     def get_session(self):
         return self.SessionLocal()
+    
+    def init_db(self):
+        # Importa tus modelos aquí para que SQLAlchemy los registre en Base
+        import src.data.models.user_model  # importa todos tus modelos aquí
+        self.Base.metadata.create_all(bind=self.engine)
     

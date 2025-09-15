@@ -1,11 +1,9 @@
 from sqlalchemy import Column, Integer, String, DateTime
 from datetime import datetime, timezone
 from src.data.database.data_source import DataSource
+from src.data.database.base import Base
 
-# Crea una instancia del DataSource para acceder a Base
-ds = DataSource()
-
-class UserModel(ds.get_data_source().Base):
+class UserModel(Base):
     __tablename__ = "user"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
