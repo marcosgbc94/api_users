@@ -6,13 +6,14 @@ from src.data.repositories.user_repository import UserRepository
 from src.use_cases.user_create import CreateUserUseCase
 from src.use_cases.get_users import GetUsers
 from typing import List
+from src.core.security import get_current_user
 
 router = APIRouter()
 
 user_repo = UserRepository()
 
 @router.post("/users", response_model=UserOut, status_code=201)
-def create_user(request: UserCreate, db: Session = Depends(get_db)):
+def create_user(request: UserCreate, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     create_user_uc = CreateUserUseCase(user_repo)
     return create_user_uc.execute(db, request.username, request.password)
 

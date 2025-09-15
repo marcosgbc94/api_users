@@ -1,9 +1,16 @@
 # Módulo de seguridad
 
-from datetime import datetime, timedelta # Para manejar fechas (expiración del token)
+from datetime import datetime, timedelta, timezone # Para manejar fechas (expiración del token)
+from fastapi import Depends
+from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError # Librería para crear y leer JSON Web Tokens (JWT)
-from passlib.context import CryptContext # Para hashear y verificar contraseñas (bcrypt)
+from passlib.context import CryptContext
+from pytest import Session # Para hashear y verificar contraseñas (bcrypt)
+from src.data.database.data_source import get_db
+from src.data.models.user_model import UserModel
 from src.core.config import settings # Configuración central
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/login")
 
 # Crea un contexto de encriptación con bcrypt (el algoritmo recomendado para passwords).
 # deprecated="auto" hace que si cambias el algoritmo en el futuro, los nuevos hashes usen el nuevo, pero los viejos sigan siendo válidos.
@@ -22,7 +29,7 @@ def verify_password(password: str, hashed: str) -> bool:
 # Devuelve un token JWT, que es lo que el cliente usará como credencial
 def create_access_token(data: dict, expires_minutes: int = settings.ACCESS_TOKEN_EXPIRE_MINUTES):
     to_encode = data.copy() # Toma un diccionario data (por ejemplo { "sub": "marcos" }
-    expire = datetime.utcnow() + timedelta(minutes=expires_minutes) # Le agrega una fecha de expiración (exp)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=expires_minutes) # Le agrega una fecha de expiración (exp)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM) # Lo firma con SECRET_KEY y HS256. 
 
@@ -31,3 +38,8 @@ def create_access_token(data: dict, expires_minutes: int = settings.ACCESS_TOKEN
 # Si no es válido → lanza JWTError.
 def decode_token(token: str):
     return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> UserModel:
+    payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+    username: str = payload.get("sub")
+    return db.query(UserModel).filter(UserModel.username == username).first()

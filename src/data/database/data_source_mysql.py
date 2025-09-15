@@ -7,11 +7,11 @@ load_dotenv()  # Carga variables del .env
 
 class DataSourceMySQL:
     def __init__(self):
-        self.user = os.getenv("MYSQL_USER", "root")
-        self.password = os.getenv("MYSQL_PASSWORD", "")
-        self.host = os.getenv("MYSQL_HOST", "localhost")
-        self.port = os.getenv("MYSQL_PORT", "3306")
-        self.db_name = os.getenv("MYSQL_DB", "api_users_db")
+        self.user = os.getenv("MYSQL_USER")
+        self.password = os.getenv("MYSQL_PASSWORD")
+        self.host = os.getenv("MYSQL_HOST")
+        self.port = os.getenv("MYSQL_PORT")
+        self.db_name = os.getenv("MYSQL_DB")
 
         self.SQLALCHEMY_DATABASE_URL = (
             f"mysql+pymysql://{self.user}:{self.password}@{self.host}:{self.port}/{self.db_name}"

@@ -7,11 +7,11 @@ load_dotenv()  # Carga variables del .env
 
 class DataSourcePostgre:
     def __init__(self):
-        self.user = os.getenv("POSTGRE_USER", "root")
-        self.password = os.getenv("POSTGRE_PASSWORD", "1234")
-        self.host = os.getenv("POSTGRE_HOST", "localhost")
-        self.port = os.getenv("POSTGRE_PORT", "3306")
-        self.db_name = os.getenv("POSTGRE_DB", "api_users_db")
+        self.user = os.getenv("POSTGRE_USER")
+        self.password = os.getenv("POSTGRE_PASSWORD")
+        self.host = os.getenv("POSTGRE_HOST")
+        self.port = os.getenv("POSTGRE_PORT")
+        self.db_name = os.getenv("POSTGRE_DB")
 
         self.SQLALCHEMY_DATABASE_URL = (
             f"postgresql+psycopg2://{self.user}:{self.password}@{self.host}:{self.port}/{self.db_name}"
